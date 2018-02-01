@@ -1,0 +1,129 @@
+grammar fr.lip6.veca.ide.VecaDsl with org.eclipse.xtext.common.Terminals
+
+generate vecaDsl "http://www.lip6.fr/veca/ide/VecaDsl"
+
+Model:
+	{Model}
+	'define' types+=Component+
+	'in' root=NamedComponent
+;
+
+Component:
+	BasicComponent | CompositeComponent
+;
+
+BasicComponent:
+	{BasicComponent}
+	'basic' 'component' 'type' name=ID 'is'
+	'signature' signature=Signature
+	'behavior' behavior=Behavior
+	('constraints' constraints+=TimeConstraint (constraints+=TimeConstraint)* ';')?
+	'end'
+;
+
+CompositeComponent:
+	{CompositeComponent}
+	'composite' 'component' 'type' name=ID 'is'
+	'signature' signature=Signature
+	'subcomponents' children+=NamedComponent (',' children+=NamedComponent)* ';'
+	'bindings' bindings+=Binding (',' bindings+=Binding)* ';'
+	'end'
+;
+
+Signature:
+	{Signature}
+	('messages' messages+=Message (',' messages+=Message)* ';')?
+	('provides' providedOps+=Operation (',' providedOps+=Operation)* ';')?
+	('requires' requiredOps+=Operation (',' requiredOps+=Operation)* ';')?	
+;
+
+NamedComponent:
+	{NamedComponent}
+	name=ID ':' type=[Component]
+;
+
+Behavior:
+	{Behavior}
+	'start' 'in' initialState=[State] ';'
+	'stop' 'in' finalStates+=[State] (finalStates+=[State])* ';'
+	transitions+=Transition+
+;
+
+Transition:
+	{Transition}
+	source=State ':' (actions+=TransitionAction (',' actions+=TransitionAction)*)? ';' 
+;
+
+TransitionAction:
+	{CommunicationTransition}
+	action=Action 'then' target=[State]
+;
+
+State:
+	{State}
+	name=ID
+;
+
+TimeConstraint:
+	{TimeConstraint}
+	e1=CommunicationAction '->' e2=CommunicationAction ':' d1=INT '..' d2=INT
+;
+
+Binding:
+	InternalBinding | ExternalBinding
+;
+
+InternalBinding:
+	{InternalBinding}
+	'bind' point1=IJoinPoint 'and' point2=IJoinPoint
+;
+
+ExternalBinding:
+	{ExternalBinding}
+	('bind' point1=EJoinPoint 'to' point2=IJoinPoint)
+	| ('bind' point1=IJoinPoint 'to' point2=EJoinPoint)
+;
+
+JoinPoint:
+	IJoinPoint | EJoinPoint
+;
+
+IJoinPoint:
+	{IJoinPoint}
+	component=[NamedComponent] '.' operation=ID // cannot refer to op in other component
+;
+
+EJoinPoint:
+	{EJoinPoint}
+	'self' '.' operation=[Operation]
+;
+
+Action:
+	CommunicationAction | InternalAction
+;
+
+CommunicationAction:
+	{CommunicationAction}
+	communicationKind=CommunicationKind operation=[Operation]
+;
+
+InternalAction:
+	{InternalAction}
+	'tau'
+;
+
+Message:
+	{Message}
+	name=ID
+;
+
+Operation:
+	{Operation}
+	name=ID
+	'(' inputMessage=[Message] ')'
+	(':' outputMessage=[Message])?
+;
+
+enum CommunicationKind:
+	RECEIVE='receive' | REPLY='reply' | INVOKE='invoke' | RESULT='result'
+;
