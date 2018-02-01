@@ -5,3 +5,6 @@
 **/model/generated
 fr.lip6.veca.ide.repository/features
 fr.lip6.veca.ide.repository/plugins
+**/.launch
+fr.lip6.veca.ide.repository/artifacts.jar
+fr.lip6.veca.ide.repository/content.jar
