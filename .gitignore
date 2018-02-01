@@ -3,3 +3,5 @@
 **/xtend-gen/
 **/target/
 **/model/generated
+fr.lip6.veca.ide.repository/features
+fr.lip6.veca.ide.repository/plugins

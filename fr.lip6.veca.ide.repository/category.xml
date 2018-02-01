@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature id="fr.lip6.veca.ide.feature" version="0.0.0">
+		<category name="main"/>
+	</feature>
+	<feature id="fr.lip6.veca.ide.feature.source" version="0.0.0">
+		<category name="main.source"/>
+	</feature>
+	<category-def name="main" label="VecaDsl"/>
+	<category-def name="main.source" label="VecaDsl (Sources)"/>
+</site>
