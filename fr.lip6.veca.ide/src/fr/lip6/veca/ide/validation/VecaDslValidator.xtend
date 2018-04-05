@@ -17,7 +17,6 @@ import fr.lip6.veca.ide.vecaDsl.Message
 import fr.lip6.veca.ide.vecaDsl.CompositeComponent
 import fr.lip6.veca.ide.vecaDsl.InternalBinding
 import fr.lip6.veca.ide.vecaDsl.ExternalBinding
-import fr.lip6.veca.ide.vecaDsl.NamedComponent
 
 /**
  * This class contains custom validation rules. 
@@ -29,6 +28,7 @@ class VecaDslValidator extends AbstractVecaDslValidator {
 public static val INVALID_NAME = 'invalidName'
 public static val UNKNOWN_OPERATION = "unknownOperation"
 public static val INCOMPATIBLE_OPERATIONS = "incompatibleOperations"
+public static val INCORRECT_BINDING = "incorrectBinding"
 public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
@@ -49,8 +49,8 @@ public static val ERROR = "error"
 	// two operations are compatible if:
 	// [X] they have the same name
 	// [X] they have the same message types
-	// [ ] for external bindings connect prov/prov or req/req (in Component using checkCompatibleOperationsInComponentBindings)
-	// [ ] for internal bindings connect prov/req or req/prov (in Component using checkCompatibleOperationsInComponentBindings)
+	// [X] for internal bindings connect required to provided (in Component using checkCompatibleOperationsInComponentBindings)
+	// [X] for external bindings connect self.provided to provided or required to self.required (in Component using checkCompatibleOperationsInComponentBindings)
  	@Check
 	def checkCompatibleOperationsInBinding(BindingInformation b) {
 		val o1 = b.point1.findOperation()
@@ -65,7 +65,7 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// bindings in a composite component have different identifiers
+	// [X] bindings in a composite component have different identifiers
 	@Check
 	def checkBindingIdsAllDifferentInCompositeComponent(CompositeComponent c) {
 		for(Binding b: c.bindings) {
@@ -78,20 +78,7 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// no self binding
-	@Check
-	def checkNoSelfBinding(InternalBinding b) {
-		val p1 = b.point1 as IJoinPoint
-		val p2 = b.point2 as IJoinPoint
-		if (p1.component.name.equals(p2.component.name)) {
-			error("Self-binding is not allowed",
-				VecaDslPackage.Literals.BINDING__BINFO,
-				SELF_BINDING
-			)
-		}
-	}
-
-	// operations used in internal bindings do exist 
+	// [X] operations used in internal bindings do exist 
  	@Check
 	def checkExistingOperationInBinding(BindingInformation b) {
 		val p1 = b.point1
@@ -108,39 +95,42 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// no component named self
+	// [X] no self binding
 	@Check
-	def checkNoComponentNamedSelf(NamedComponent n) {
-		if(n.name.equals("self")) {
-			error("A component instance should not be named 'self'",
-				VecaDslPackage.Literals.NAMED_COMPONENT__NAME,
-				SELF_COMPONENT
+	def checkNoSelfBinding(Binding b) {
+		if (b.binfo instanceof InternalBinding) {
+			val p1 = b.binfo.point1 as IJoinPoint
+			val p2 = b.binfo.point2 as IJoinPoint
+			if (p1.component.name.equals(p2.component.name)) {
+				error("Self-binding is not allowed",
+					VecaDslPackage.Literals.BINDING__BINFO,
+					SELF_BINDING
 			)
+			}
 		}
 	}
-	
+
+	// [X] internal bindings connect required to provided
+	// [X] external bindings connect self.provided to provided or required to self.required
 	@Check
 	def checkCompatibleOperationsInComponentBindings(CompositeComponent c) {
 		for(Binding b: c.bindings) {			
-			if (b instanceof InternalBinding) {
-				if (!checkCompatibleOperationsInComponentInternalBinding(c, b as InternalBinding)) {
-					error("Incompatible operations (should be provided/required or required/provided)",
+			if (b.binfo instanceof InternalBinding) {
+				if (!checkCompatibleOperationsInComponentInternalBinding(c, b.binfo as InternalBinding)) {
+					error(String.format("Binding %s is not correct (should be required --> provided)",b.name),
 						VecaDslPackage.Literals.COMPOSITE_COMPONENT__BINDINGS,
-						INCOMPATIBLE_OPERATIONS
+						INCORRECT_BINDING
 					)				
 				}
 			}	
-			/*
-			else if (b instanceof ExternalBinding) {
-				if (!checkCompatibleOperationsInComponentExternalBinding(c, b as ExternalBinding)) {
-					error("Incompatible operations (should be provided/provided or required/required)",
-						VecaDslPackage.Literals.BINDING__POINT1,
-						INCOMPATIBLE_OPERATIONS
+			else if (b.binfo instanceof ExternalBinding) {
+				if (!checkCompatibleOperationsInComponentExternalBinding(c, b.binfo as ExternalBinding)) {
+					error(String.format("Binding %s is not correct (should be self.provided ==> provided or required ==> self.required)",b.name),
+						VecaDslPackage.Literals.COMPOSITE_COMPONENT__BINDINGS,
+						INCORRECT_BINDING
 					)						
 				}
 			}
-			* 
-			*/	
 		}
 	}
 	
@@ -205,36 +195,34 @@ public static val ERROR = "error"
 		return false
 	}
 	
-	// an internal binding c1.o1 - c2.o2 is ok if
-	// - either o1 is provided by c1 and o2 is required by c2
-	// - or o1 is required by c1 and o2 is provided by c2
+	// an internal binding c1.o1 --> c2.o2 is ok if o1 is required by c1 and o2 is provided by c2
 	// note that for full correctness, we also have to use checkCompatibleOperationsInBinding (checks op names and messages)
 	def checkCompatibleOperationsInComponentInternalBinding(CompositeComponent c, InternalBinding b) {
 		val o1 = (b.point1 as IJoinPoint).operation
 		val o2 = (b.point2 as IJoinPoint).operation
 		val c1 = (b.point1 as IJoinPoint).component.type
 		val c2 = (b.point2 as IJoinPoint).component.type
-		return (isProvidedOperation(c1,o1) && isRequiredOperation(c2,o2)) || (isRequiredOperation(c1,o1) && isProvidedOperation(c2,o2))			
+		return (isRequiredOperation(c1,o1) && isProvidedOperation(c2,o2))			
 	}
 
-	// an external binding c1.o1 - c2.o2 is ok if
-	// - either o1 is provided by c1 and o2 is provided by c2
-	// - or o1 is required by c1 and o2 is required by c2
+	// an external binding c1.o1 ==> c2.o2 is ok if
+	// - either o1 is provided by c1 and o2 is provided by c2 and c1 is self
+	// - or o1 is required by c1 and o2 is required by c2 and c2 is self
 	// note that for full correctness, we also have to use checkCompatibleOperationsInBinding (checks op names and messages)
 	def checkCompatibleOperationsInComponentExternalBinding(CompositeComponent c, ExternalBinding b) {
-		if (b.point1 instanceof EJoinPoint && b.point2 instanceof IJoinPoint) {
+		if (b.point1 instanceof EJoinPoint && b.point2 instanceof IJoinPoint) { // self.o1 ==> c2.o2
 			val o1 = (b.point1 as EJoinPoint).operation.name
 			val o2 = (b.point2 as IJoinPoint).operation
 			val c1 = c
 			val c2 = (b.point2 as IJoinPoint).component.type
-			return (isProvidedOperation(c1,o1) && isProvidedOperation(c2,o2)) || (isRequiredOperation(c1,o1) && isRequiredOperation(c2,o2))	
+			return (isProvidedOperation(c1,o1) && isProvidedOperation(c2,o2))
 		}		
-		else if (b.point1 instanceof IJoinPoint && b.point2 instanceof EJoinPoint) {
+		else if (b.point1 instanceof IJoinPoint && b.point2 instanceof EJoinPoint) { // c1.o1 ==> self.o2
 			val o1 = (b.point1 as IJoinPoint).operation
 			val o2 = (b.point2 as EJoinPoint).operation.name
 			val c1 = (b.point1 as IJoinPoint).component.type
 			val c2 = c
-			return (isProvidedOperation(c1,o1) && isProvidedOperation(c2,o2)) || (isRequiredOperation(c1,o1) && isRequiredOperation(c2,o2))	
+			return (isRequiredOperation(c1,o1) && isRequiredOperation(c2,o2))	
 		}
 		else // not possible wrt the grammar
 			return false
