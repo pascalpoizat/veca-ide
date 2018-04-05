@@ -10,6 +10,7 @@ import fr.lip6.veca.ide.vecaDsl.IJoinPoint
 import fr.lip6.veca.ide.vecaDsl.JoinPoint
 import java.util.Arrays
 import fr.lip6.veca.ide.vecaDsl.Binding
+import fr.lip6.veca.ide.vecaDsl.BindingInformation
 import fr.lip6.veca.ide.vecaDsl.EJoinPoint
 import fr.lip6.veca.ide.vecaDsl.Operation
 import fr.lip6.veca.ide.vecaDsl.Message
@@ -30,6 +31,7 @@ public static val UNKNOWN_OPERATION = "unknownOperation"
 public static val INCOMPATIBLE_OPERATIONS = "incompatibleOperations"
 public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
+public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
 public static val ERROR = "error"
 
 	// component type names begin with a capital
@@ -45,46 +47,34 @@ public static val ERROR = "error"
 	
 	// bindings relate compatible operations
 	// two operations are compatible if:
-	// - they have the same name
-	// - they have the same message types
-	// - for external bindings connect prov/prov or req/req (in Component using checkCompatibleOperationsInComponentBindings)
-	// - for internal bindings connect prov/req or req/prov (in Component using checkCompatibleOperationsInComponentBindings)
+	// [X] they have the same name
+	// [X] they have the same message types
+	// [ ] for external bindings connect prov/prov or req/req (in Component using checkCompatibleOperationsInComponentBindings)
+	// [ ] for internal bindings connect prov/req or req/prov (in Component using checkCompatibleOperationsInComponentBindings)
  	@Check
-	def checkCompatibleOperationsInBinding(Binding b) {
+	def checkCompatibleOperationsInBinding(BindingInformation b) {
 		val o1 = b.point1.findOperation()
 		val o2 = b.point2.findOperation()
 		if (o1 !== null && o2 !== null) {
 			if (!compatible(o1,o2)) {
 				error("Incompatible operations (names and/or messages)",
-					VecaDslPackage.Literals.BINDING__POINT1,
+					VecaDslPackage.Literals.BINDING_INFORMATION__POINT1,
 					INCOMPATIBLE_OPERATIONS
 				)
 			}
 		}
 	}
 	
+	// bindings in a composite component have different identifiers
 	@Check
-	def checkCompatibleOperationsInComponentBindings(CompositeComponent c) {
+	def checkBindingIdsAllDifferentInCompositeComponent(CompositeComponent c) {
 		for(Binding b: c.bindings) {
-			/*
-			if (b instanceof InternalBinding) {
-				if (!checkCompatibleOperationsInComponentInternalBinding(c, b as InternalBinding)) {
-					error("Incompatible operations (should be provided/required or required/provided)",
-						VecaDslPackage.Literals.BINDING__POINT1,
-						INCOMPATIBLE_OPERATIONS
-					)				
-				}
-			}	
-			else if (b instanceof ExternalBinding) {
-				if (!checkCompatibleOperationsInComponentExternalBinding(c, b as ExternalBinding)) {
-					error("Incompatible operations (should be provided/provided or required/required)",
-						VecaDslPackage.Literals.BINDING__POINT1,
-						INCOMPATIBLE_OPERATIONS
-					)						
-				}
+			if (c.bindings.filter[it.name==b.name].size > 1) {
+				error("Multiple bindings with the same id in a composite component",
+					VecaDslPackage.Literals.COMPOSITE_COMPONENT__BINDINGS,
+					MULTIPLE_BINDINGS_SAME_ID
+				)
 			}
-			* 
-			*/	
 		}
 	}
 	
@@ -95,7 +85,7 @@ public static val ERROR = "error"
 		val p2 = b.point2 as IJoinPoint
 		if (p1.component.name.equals(p2.component.name)) {
 			error("Self-binding is not allowed",
-				VecaDslPackage.Literals.BINDING__POINT1,
+				VecaDslPackage.Literals.BINDING__BINFO,
 				SELF_BINDING
 			)
 		}
@@ -103,7 +93,7 @@ public static val ERROR = "error"
 
 	// operations used in internal bindings do exist 
  	@Check
-	def checkExistingOperationInBinding(Binding b) {
+	def checkExistingOperationInBinding(BindingInformation b) {
 		val p1 = b.point1
 		val p2 = b.point2
 		for(JoinPoint p : Arrays.asList(p1,p2)) {
@@ -126,6 +116,31 @@ public static val ERROR = "error"
 				VecaDslPackage.Literals.NAMED_COMPONENT__NAME,
 				SELF_COMPONENT
 			)
+		}
+	}
+	
+	@Check
+	def checkCompatibleOperationsInComponentBindings(CompositeComponent c) {
+		for(Binding b: c.bindings) {			
+			if (b instanceof InternalBinding) {
+				if (!checkCompatibleOperationsInComponentInternalBinding(c, b as InternalBinding)) {
+					error("Incompatible operations (should be provided/required or required/provided)",
+						VecaDslPackage.Literals.COMPOSITE_COMPONENT__BINDINGS,
+						INCOMPATIBLE_OPERATIONS
+					)				
+				}
+			}	
+			/*
+			else if (b instanceof ExternalBinding) {
+				if (!checkCompatibleOperationsInComponentExternalBinding(c, b as ExternalBinding)) {
+					error("Incompatible operations (should be provided/provided or required/required)",
+						VecaDslPackage.Literals.BINDING__POINT1,
+						INCOMPATIBLE_OPERATIONS
+					)						
+				}
+			}
+			* 
+			*/	
 		}
 	}
 	
@@ -156,9 +171,9 @@ public static val ERROR = "error"
 		
 	def getCause(JoinPoint p, JoinPoint p1, JoinPoint p2) {
 		if (p===p1)
-			return VecaDslPackage.Literals.BINDING__POINT1
+			return VecaDslPackage.Literals.BINDING_INFORMATION__POINT1
 		else
-			return VecaDslPackage.Literals.BINDING__POINT2
+			return VecaDslPackage.Literals.BINDING_INFORMATION__POINT2
 	}
 	
 	def checkJoinPoint(IJoinPoint p) {

@@ -70,18 +70,23 @@ TimeConstraint:
 ;
 
 Binding:
+	{Binding}
+	'@' name=INT ':' binfo=BindingInformation
+;
+
+BindingInformation:
 	InternalBinding | ExternalBinding
 ;
 
 InternalBinding:
 	{InternalBinding}
-	'bind' point1=IJoinPoint 'and' point2=IJoinPoint
+	point1=IJoinPoint '-->' point2=IJoinPoint
 ;
 
 ExternalBinding:
 	{ExternalBinding}
-	('bind' point1=EJoinPoint 'to' point2=IJoinPoint)
-	| ('bind' point1=IJoinPoint 'to' point2=EJoinPoint)
+	(point1=EJoinPoint '==>' point2=IJoinPoint)
+	| (point1=IJoinPoint '==>' point2=EJoinPoint)
 ;
 
 JoinPoint:
