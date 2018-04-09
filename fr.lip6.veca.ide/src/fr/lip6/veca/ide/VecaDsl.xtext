@@ -55,7 +55,7 @@ Transition:
 ;
 
 TransitionAction:
-	{CommunicationTransition}
+	{TransitionAction}
 	action=Action 'then' target=[State]
 ;
 
