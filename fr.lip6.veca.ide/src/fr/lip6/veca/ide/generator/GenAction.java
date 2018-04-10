@@ -20,6 +20,7 @@ public class GenAction {
 	}
 
 	private int genHashCode(int result, int prime) {
+		int rtr = result;
 		String code = null;
 		Operation op = null;
 		if (action instanceof InternalAction)
@@ -43,9 +44,9 @@ public class GenAction {
 				break;
 			}
 		}
-		result = prime * result + ((code == null) ? 0 : code.hashCode());
-		result = prime * result + ((op == null) ? 0 : op.getName().hashCode());
-		return result;
+		rtr = prime * rtr + ((code == null) ? 0 : code.hashCode());
+		rtr = prime * rtr + ((op == null) ? 0 : op.getName().hashCode());
+		return rtr;
 	}
 	
 	@Override
@@ -58,10 +59,7 @@ public class GenAction {
 			return false;
 		GenAction other = (GenAction) obj;
 		if (action == null) {
-			if (other.action != null)
-				return false;
-			else
-				return true; // both have null actions
+			return (other.action == null);
 		} else { // both have non null actions
 			if (action.getClass() != other.action.getClass())
 				return false;
