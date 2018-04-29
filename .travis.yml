@@ -34,7 +34,7 @@ deploy:
   skip-cleanup: true
   github-token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   keep-history: true
-  local-dir: fr.lip6.veca.ide.updatesite/target/repository
+  local-dir: fr.lip6.veca.ide.repository/target/repository
   target-branch: gh-pages
   on:
     branch: master
