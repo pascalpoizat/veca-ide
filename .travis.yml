@@ -6,12 +6,15 @@ install: true
 language: java
 
 # from https://muelder.blogspot.com/2015/08/building-eclipse-plugins-with-maven.html
-# used to get a display for the tests (else fails due to no display)
+# used to get a display for the tests
+# else fails due to no display with "error: XDG_RUNTIME_DIR not set in the environment."
+
 env:  
-   global:  
+  global:  
     - DISPLAY=:99.0  
+    - MAVEN_OPTS="-Xmx3g"
   before_install:  
-   - sh -e /etc/init.d/xvfb start - sleep 10  
+    - sh -e /etc/init.d/xvfb start - sleep 10  
 
 before_script:
  - echo $JAVA_OPTS
@@ -22,10 +25,6 @@ script :
  - mvn -e install 
 
 jdk: oraclejdk8
-
-env:
-  global:
-    - MAVEN_OPTS="-Xmx3g"
 
 cache:
   directories:
