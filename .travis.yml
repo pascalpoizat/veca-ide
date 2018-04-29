@@ -1,28 +1,26 @@
 # taken from https://github.com/yanntm/ITS-contribution
-# and adapted
+# and adapted with information from
+# https://muelder.blogspot.com/2015/08/building-eclipse-plugins-with-maven.html
+# https://docs.travis-ci.com/user/gui-and-headless-browsers/
 
 install: true
 
 language: java
 
-# from https://muelder.blogspot.com/2015/08/building-eclipse-plugins-with-maven.html
-# used to get a display for the tests
-# else fails due to no display with "error: XDG_RUNTIME_DIR not set in the environment."
-
 env:  
   global:  
-    - DISPLAY=:99.0  
     - MAVEN_OPTS="-Xmx3g"
-  before_install:  
-    - sh -e /etc/init.d/xvfb start - sleep 10  
 
 before_script:
  - echo $JAVA_OPTS
  - export JAVA_OPTS='-Xms1g -Xmx3g'
  - echo "MAVEN_OPTS='-Xmx3g'" > ~/.mavenrc
+ - "export DISPLAY=:99.0"
+ - "sh -e /etc/init.d/xvfb start"
+ - sleep 10
 
 script : 
- - mvn -e install 
+ - mvn -e clean install 
 
 jdk: oraclejdk8
 
