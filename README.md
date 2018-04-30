@@ -18,13 +18,21 @@ This is the Eclipse IDE plugin for the DSL of the VECA project (DSL edition and 
 ## 1. Requirements
 
 You will need a recent Eclipse with version 2.13 or more of the XText libraries.
-You can get for example the **Eclipse IDE for Java and DSL Developers** from [the Eclipse Packages Site](https://www.eclipse.org/downloads/eclipse-packages/).
-The plugin gets activated once you work on a `.veca` file.
+For this:
+
+- get the **Eclipse IDE for Java and DSL Developers** from [the Eclipse Packages Site](https://www.eclipse.org/downloads/eclipse-packages/)
+
+- in Eclipse, Help -> Install New Sofware ... -> Add a new repository from `http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/` (you can name it `xtext (update site)` for example)
+
+- from this repository, select Xtext / Xtext complete SDK for installation
 
 ## 2. Update-site
 
-You can get the plugin directly from the update-site.
-In Eclipse, use Help -> Install New Software ... -> Add this update site : `https://pascalpoizat.github.io/veca-ide/`.
+You can get the VECA plugin directly from the update-site:
+
+- in Eclipse, Help -> Install New Software ... -> Add a new repository from `https://pascalpoizat.github.io/veca-ide/` (you can name it `veca dsl (update site)` for example)
+
+- from this repository, select VecaDsl / VecaDsl Feature for installation
 
 ## 3. Building from source
 
@@ -44,9 +52,13 @@ cd $VECA_IDE_SOURCE
 mvn clean install
 ```
 
-In Eclipse, use Help -> Install New Software ... -> Add this local update site : `$VECA_IDE_SOURCE/fr.lip6.veca.ide.parent/fr.lip6.veca.ide.repository/target/repository/`.
+In Eclipse, Help -> Install New Software ... -> Add this local update site : `$VECA_IDE_SOURCE/fr.lip6.veca.ide.parent/fr.lip6.veca.ide.repository/target/repository/`.
 
 ## 4. Using the plugin
+
+The plugin is activated once you edit a `.veca` file. The first time you use the plugin on a project, the IDE may ask you whether you want to convert it to an XText project. Answer yes.
+
+The syntax of a model in the VECA DSL format is available from [the VECA project page](https://pascalpoizat.github.io/veca).
 
 The plugin provides you with:
 
@@ -60,6 +72,6 @@ The plugin provides you with:
 
   - no self binding
 
-- transformation from the VECA DSL format (model being edited) to the VECA JSON format (in the same directory as the model being edited). Transformation is performed upon saving a syntactically correct model that has been edited.
+- transformation from the VECA DSL format (model being edited) to the VECA JSON format (a file always named `model.json` in the `src-gen` directory of the project the model is in). Transformation is performed upon saving a syntactically correct model that has been edited.
 
 For the time being, verification is achieved from outside the plugin by first transforming the model in VECA JSON format into a timed automaton in XTA format (using [veca-haskell](https://github.com/pascalpoizat/veca-haskell)) and then using the [UPPAAL](http://uppaal.org) or [ITS-Tools](https://lip6.github.io/ITSTools-web/) verification tools.
