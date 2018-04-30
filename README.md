@@ -1,9 +1,9 @@
 # validation of component architectures (veca-ide)
 
 [![Build Status](https://img.shields.io/travis/pascalpoizat/veca-ide/master.svg?style=flat-square)](https://travis-ci.org/pascalpoizat/veca-ide)
-<!--[![Code Coverage](https://img.shields.io/coveralls/pascalpoizat/veca-ide/master.svg?style=flat-square)](https://coveralls.io/github/pascalpoizat/veca-ide)-->
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg?style=flat-square&label=version)](pom.xml)<br/>
+<!--[![Code Coverage](https://img.shields.io/coveralls/pascalpoizat/veca-ide/master.svg?style=flat-square)](https://coveralls.io/github/pascalpoizat/veca-ide)-->
 <!--
 [![Issues Ready](https://img.shields.io/github/issues-raw/pascalpoizat/veca-ide/ready.svg?style=flat-square&label=issues%20ready%20for%20development)](https://waffle.io/pascalpoizat/veca-ide)
 [![Issues in Progress](https://img.shields.io/github/issues-raw/pascalpoizat/veca-ide/in%20progress.svg?style=flat-square&label=issues%20in%20progress)](https://waffle.io/pascalpoizat/veca-ide)
