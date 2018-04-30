@@ -18,6 +18,7 @@ This is the Eclipse IDE plugin for the DSL of the VECA project (DSL edition and 
 ## 1. Requirements
 
 You will need a recent Eclipse with version 2.13 or more of the XText libraries.
+You can get for example the **Eclipse IDE for Java and DSL Developers** from [the Eclipse Packages Site](https://www.eclipse.org/downloads/eclipse-packages/).
 The plugin gets activated once you work on a `.veca` file.
 
 ## 2. Update-site
