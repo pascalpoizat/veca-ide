@@ -11,7 +11,7 @@
 
 This is the Eclipse IDE plugin for the DSL of the VECA project (DSL edition and transformation from the DSL to the VECA JSON format). 
 
-- for an overview of the VECA project features and objectives, see [VECA project](https://pascalpoizat.github.io/veca).
+- for an overview of the VECA project features and objectives, see [VECA project](https://pascalpoizat.github.io/veca-web).
 
 - for the transformation of the VECA JSON format into timed automata in XTA format for formal verification, see [veca-haskell](https://github.com/pascalpoizat/veca-haskell).
 
@@ -58,7 +58,7 @@ In Eclipse, Help -> Install New Software ... -> Add this local update site : `$V
 
 The plugin is activated once you edit a `.veca` file. The first time you use the plugin on a project, the IDE may ask you whether you want to convert it to an XText project. Answer yes.
 
-The syntax of a model in the VECA DSL format is available from [the VECA project page](https://pascalpoizat.github.io/veca).
+The syntax of a model in the VECA DSL format is available from [the VECA project page](https://pascalpoizat.github.io/veca-web).
 
 The plugin provides you with:
 
