@@ -74,4 +74,4 @@ The plugin provides you with:
 
 - transformation from the VECA DSL format (model being edited) to the VECA JSON format (a file always named `model.json` in the `src-gen` directory of the project the model is in). Transformation is performed upon saving a syntactically correct model that has been edited.
 
-For the time being, verification is achieved from outside the plugin by first transforming the model in VECA JSON format into a timed automaton in XTA format (using [veca-haskell](https://github.com/pascalpoizat/veca-haskell)) and then using the [UPPAAL](http://uppaal.org) or [ITS-Tools](https://lip6.github.io/ITSTools-web/) verification tools.
+For the time being, verification is achieved from outside the plugin by first transforming the model in VECA JSON format into a timed automaton in XTA format (using [veca-haskell](https://github.com/pascalpoizat/veca-haskell)) and then using the [ITS-Tools](https://lip6.github.io/ITSTools-web/) or [UPPAAL](http://uppaal.org) verification tools.
