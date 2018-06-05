@@ -17,6 +17,7 @@ import fr.lip6.veca.ide.vecaDsl.Message
 import fr.lip6.veca.ide.vecaDsl.CompositeComponent
 import fr.lip6.veca.ide.vecaDsl.InternalBinding
 import fr.lip6.veca.ide.vecaDsl.ExternalBinding
+import fr.lip6.veca.ide.vecaDsl.NamedComponent
 
 /**
  * This class contains custom validation rules. 
@@ -29,6 +30,7 @@ public static val INVALID_NAME = 'invalidName'
 public static val UNKNOWN_OPERATION = "unknownOperation"
 public static val INCOMPATIBLE_OPERATIONS = "incompatibleOperations"
 public static val INCORRECT_BINDING = "incorrectBinding"
+public static val INCORRECT_CHILDREN = "incorrectChildren"
 public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
@@ -132,6 +134,18 @@ public static val ERROR = "error"
 				}
 			}
 		}
+	}
+	
+	// [ ] children in composites have different names
+	@Check
+	def checkChildrenHaveDifferentNames(CompositeComponent c) {
+		for(NamedComponent sc: c.children)
+			if(c.children.filter[it.name.equals(sc.name)].size>1) {
+				error(String.format("There is more than one subcomponent named %s",sc.name),
+					VecaDslPackage.Literals.COMPOSITE_COMPONENT__CHILDREN,
+					INCORRECT_CHILDREN
+				)
+			}
 	}
 	
 	// helpers
