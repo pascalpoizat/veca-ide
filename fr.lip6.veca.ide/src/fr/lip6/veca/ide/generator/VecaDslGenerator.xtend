@@ -46,7 +46,7 @@ class VecaDslGenerator extends AbstractGenerator {
 	}
 	
 	def doGenerate(Model m) '''
-	«doGenerate(m.root.type)»
+	«doGenerate(m.root)»
 	'''
 
 	def doGenerate(Component c) {
@@ -136,10 +136,10 @@ class VecaDslGenerator extends AbstractGenerator {
 	'''
 	
 	def doGenerate(NamedComponent n) '''
-	[
-		["«n.name»"],
-		«doGenerate(n.type)»
-	]
+	{
+		"instanceId": ["«n.name»"],
+		"componentType": «doGenerate(n.type)»
+	}
 	'''
 	
 	def doGenerate(Behavior b) {
