@@ -58,19 +58,13 @@ In Eclipse, Help -> Install New Software ... -> Add this local update site : `$V
 
 The plugin is activated once you edit a `.veca` file. The first time you use the plugin on a project, the IDE may ask you whether you want to convert it to an XText project. Answer yes.
 
-The syntax of a model in the VECA DSL format is available from [the VECA project page](https://pascalpoizat.github.io/veca-web).
+The syntax of a model in the VECA DSL format is available in [the VECA project documentation](https://pascalpoizat.github.io/veca-web/documentation.html).
 
 The plugin provides you with:
 
 - syntax highlighting
 
-- some model verifications that can be performed directly on the VECA model
-
-  - compatible operations in bindings (same name, same message types, internal bindings relate a provided operation to a required one, external bindings relate a composite provided operation to a provided operation in one of its sub-components or a sub-component required operation to a required operation in its composite)
-
-  - distinct identifier for bindings in a given composite
-
-  - no self binding
+- some model verifications that can be performed directly on the VECA model (see Syntactic verification, in [the VECA projet documentation](https://pascalpoizat.github.io/veca-web/documentation.html))
 
 - transformation from the VECA DSL format (model being edited) to the VECA JSON format (a file always named `model.json` in the `src-gen` directory of the project the model is in). Transformation is performed upon saving a syntactically correct model that has been edited.
 
