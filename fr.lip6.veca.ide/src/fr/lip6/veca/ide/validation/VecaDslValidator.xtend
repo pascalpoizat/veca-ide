@@ -18,6 +18,7 @@ import fr.lip6.veca.ide.vecaDsl.CompositeComponent
 import fr.lip6.veca.ide.vecaDsl.InternalBinding
 import fr.lip6.veca.ide.vecaDsl.ExternalBinding
 import fr.lip6.veca.ide.vecaDsl.NamedComponent
+import fr.lip6.veca.ide.vecaDsl.Model
 
 /**
  * This class contains custom validation rules. 
@@ -31,6 +32,7 @@ public static val UNKNOWN_OPERATION = "unknownOperation"
 public static val INCOMPATIBLE_OPERATIONS = "incompatibleOperations"
 public static val INCORRECT_BINDING = "incorrectBinding"
 public static val INCORRECT_CHILDREN = "incorrectChildren"
+public static val INCORRECT_TYPES = "incorrectTypes"
 public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
@@ -44,6 +46,19 @@ public static val ERROR = "error"
 					VecaDslPackage.Literals.COMPONENT__NAME,
 					INVALID_NAME,
 					c.name)
+		}
+	}
+	
+	// all component types have different names
+	@Check
+	def checkComponentNamesAreDifferent(Model m) {
+		for(Component c: m.types) {
+			if(m.types.filter[it.name.equals(c.name)].size>1) {
+				error(String.format("There is more than one component type named %s", c.name),
+					VecaDslPackage.Literals.MODEL__TYPES,
+					INCORRECT_TYPES
+				)
+			}
 		}
 	}
 	
@@ -67,7 +82,7 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// [X] bindings in a composite component have different identifiers
+	// bindings in a composite component have different identifiers
 	@Check
 	def checkBindingIdsAllDifferentInCompositeComponent(CompositeComponent c) {
 		for(Binding b: c.bindings) {
@@ -97,7 +112,7 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// [X] no self binding
+	// no self binding
 	@Check
 	def checkNoSelfBinding(Binding b) {
 		if (b.binfo instanceof InternalBinding) {
@@ -136,7 +151,7 @@ public static val ERROR = "error"
 		}
 	}
 	
-	// [ ] children in composites have different names
+	// children in composites have different names
 	@Check
 	def checkChildrenHaveDifferentNames(CompositeComponent c) {
 		for(NamedComponent sc: c.children)
