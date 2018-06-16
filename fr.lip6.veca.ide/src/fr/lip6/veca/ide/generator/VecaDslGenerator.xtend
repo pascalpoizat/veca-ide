@@ -28,6 +28,7 @@ import fr.lip6.veca.ide.vecaDsl.IJoinPoint
 import fr.lip6.veca.ide.vecaDsl.State
 import fr.lip6.veca.ide.vecaDsl.InternalAction
 import fr.lip6.veca.ide.vecaDsl.Action
+import java.time.LocalDateTime
 
 /**
  * Generates code from your model files on save.
@@ -36,13 +37,19 @@ import fr.lip6.veca.ide.vecaDsl.Action
  */
 class VecaDslGenerator extends AbstractGenerator {
 	
+	public static final String JSON_FILE_EXTENSION = "json"
+	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile('model.json', 
-						doGenerate(resource.allContents
-							.filter(Model)
-							.toList.get(0)
-						)
-		)
+		val model = resource.allContents.filter(Model).toList.get(0)
+		val inputURI = resource.URI
+		val outputURI = inputURI.trimFileExtension.appendFileExtension(JSON_FILE_EXTENSION)
+		var contents = new StringBuilder
+		contents.append("// VECA to JSON transformation\n")
+		contents.append(String.format("// input file: %s\n", inputURI))
+		contents.append(String.format("// output file: model.json (should be %s)\n", outputURI))
+		contents.append(String.format("// generated on: %s\n", LocalDateTime.now))
+		contents.append(doGenerate(model))
+		fsa.generateFile("model.json", contents.toString)
 	}
 	
 	def doGenerate(Model m) '''
