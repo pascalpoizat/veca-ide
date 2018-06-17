@@ -225,6 +225,7 @@ class VecaDslGenerator extends AbstractGenerator {
 	def doGenerate(Binding b) '''
 	{
 		"bindingType": «IF b.binfo instanceof InternalBinding»"Internal"«ELSE»"External"«ENDIF»,
+		"bindingId": "«b.name»",
 		"from": «doGenerate(b.binfo.point1)»,
 		"to": «doGenerate(b.binfo.point2)»
 	}
