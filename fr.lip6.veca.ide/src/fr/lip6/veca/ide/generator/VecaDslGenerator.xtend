@@ -42,14 +42,12 @@ class VecaDslGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val model = resource.allContents.filter(Model).toList.get(0)
 		val inputURI = resource.URI
-		val outputURI = inputURI.trimFileExtension.appendFileExtension(JSON_FILE_EXTENSION)
+		val outputURI = inputURI.trimFileExtension.appendFileExtension(JSON_FILE_EXTENSION).lastSegment
 		var contents = new StringBuilder
 		contents.append("// VECA to JSON transformation\n")
-		contents.append(String.format("// input file: %s\n", inputURI))
-		contents.append(String.format("// output file: model.json (should be %s)\n", outputURI))
 		contents.append(String.format("// generated on: %s\n", LocalDateTime.now))
 		contents.append(doGenerate(model))
-		fsa.generateFile("model.json", contents.toString)
+		fsa.generateFile(outputURI, contents.toString)
 	}
 	
 	def doGenerate(Model m) '''

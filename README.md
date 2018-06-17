@@ -12,6 +12,8 @@ This is the Eclipse IDE plugin for the DSL of the VECA project (DSL edition and 
 
 - for the transformation of the VECA JSON format into timed automata in XTA format for formal verification, see [veca-haskell](https://github.com/pascalpoizat/veca-haskell).
 
+To use this plugin your installation must fulfil the requirements given in **1. Requirements** and then you may choose either to use the available update-site following **2a. Update-site** (recommended) or build a local one using **2b. Building from source**. Some details on the use of the plugin are given in **3. Using the plugin**.
+
 ## 1. Requirements
 
 You will need a recent Eclipse with version 2.13 or more of the XText libraries.
@@ -23,7 +25,7 @@ For this:
 
 - from this repository, select Xtext / Xtext complete SDK for installation
 
-## 2. Update-site
+## 2a. Update-site
 
 You can get the VECA plugin directly from the update-site:
 
@@ -31,7 +33,7 @@ You can get the VECA plugin directly from the update-site:
 
 - from this repository, select VecaDsl / VecaDsl Feature for installation
 
-## 3. Building from source
+## 2b. Building from source
 
 You can build the plugin on your system and use it as an update site.
 First clone the project:
@@ -51,7 +53,7 @@ mvn clean install
 
 In Eclipse, Help -> Install New Software ... -> Add this local update site : `$VECA_IDE_SOURCE/fr.lip6.veca.ide.parent/fr.lip6.veca.ide.repository/target/repository/`.
 
-## 4. Using the plugin
+## 3. Using the plugin
 
 The plugin is activated once you edit a `.veca` file. The first time you use the plugin on a project, the IDE may ask you whether you want to convert it to an XText project. Answer yes.
 
@@ -63,6 +65,6 @@ The plugin provides you with:
 
 - some model verifications that can be performed directly on the VECA model (see Syntactic verification, in [the VECA projet documentation](https://pascalpoizat.github.io/veca-web/documentation.html))
 
-- transformation from the VECA DSL format (model being edited) to the VECA JSON format (a file always named `model.json` in the `src-gen` directory of the project the model is in). Transformation is performed upon saving a syntactically correct model that has been edited.
+- transformation from the VECA DSL format to the VECA JSON format. Transformation is performed upon saving a syntactically correct model that has been edited. The generated file can be found in the `src-gen` directory.
 
 For the time being, verification is achieved from outside the plugin by first transforming the model in VECA JSON format into a timed automaton in XTA format (using [veca-haskell](https://github.com/pascalpoizat/veca-haskell)) and then using the [ITS-Tools](https://lip6.github.io/ITSTools-web/) or [UPPAAL](http://uppaal.org) verification tools.
