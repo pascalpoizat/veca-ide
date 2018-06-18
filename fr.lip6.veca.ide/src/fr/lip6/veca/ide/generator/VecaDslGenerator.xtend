@@ -153,6 +153,7 @@ class VecaDslGenerator extends AbstractGenerator {
 		val transitions = BehaviorGenerator.instance.computeTransitions(b)
 	'''
 	{
+		"mid": [],
 		"alphabet": [«alphabet.map[doGenerate].join(",")»],
 		"states": [«states.map[doGenerate].join(",")»],
 		"initialState": «doGenerate(b.initialState)»,
