@@ -19,6 +19,7 @@ import fr.lip6.veca.ide.vecaDsl.InternalBinding
 import fr.lip6.veca.ide.vecaDsl.ExternalBinding
 import fr.lip6.veca.ide.vecaDsl.NamedComponent
 import fr.lip6.veca.ide.vecaDsl.Model
+import fr.lip6.veca.ide.vecaDsl.IJoinPoint
 
 /**
  * This class contains custom validation rules. 
@@ -36,6 +37,7 @@ public static val INCORRECT_TYPES = "incorrectTypes"
 public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
+public static val NARY_BINDING = "naryBinding"
 public static val ERROR = "error"
 
 	// component type names begin with a capital
@@ -163,8 +165,46 @@ public static val ERROR = "error"
 			}
 	}
 	
+	// no multiple binding
+	// for each binding b = c1.o1 -- c2.o2 in a composite
+	// there should not exist a binding b' = c1'.o1' -- c2'.o2', different from b, in the composite
+	// such that (c1=c1' and o1=o1') or (c1=c2' and o1=o2') or (c2=c2' and o2=o2') or (c2=c1' and o2=o1')
+	@Check
+	def noMultipleBindingOnOperations(CompositeComponent c) {
+		for(Binding b : c.bindings) {
+			if (c.bindings.exists[conflict(b.binfo,it.binfo)]) {
+				error(String.format("Multiple binding at the same joint point (binding %s)", b.name),
+					VecaDslPackage.Literals.COMPOSITE_COMPONENT__BINDINGS,
+					NARY_BINDING
+				)
+			}
+		}
+	}
+		
 	// helpers
 	
+	// two bindings are in conflict if a join point of the first and a join point of the second are in conflict
+	def conflict(BindingInformation bi1, BindingInformation bi2) {
+		if (bi1==bi2)
+			return false
+		return (conflict(bi1.point1,bi2.point1) || conflict(bi1.point1,bi2.point2) || conflict(bi1.point2,bi2.point1) || conflict(bi1.point2,bi2.point2))
+	}
+	
+	// two join point are in conflict if they represent the same binding point (same component, same id)
+	def conflict(JoinPoint p1, JoinPoint p2) {
+		if (p1 instanceof EJoinPoint && p2 instanceof EJoinPoint) {
+			// both components are "self", we only have to check operations
+			return (p1 as EJoinPoint).operation.name.equals((p2 as EJoinPoint).operation.name)
+		}
+		else if (p1 instanceof IJoinPoint && p2 instanceof IJoinPoint) {
+			val sameop = (p1 as IJoinPoint).operation.equals((p2 as IJoinPoint).operation)
+			val samecomp = (p1 as IJoinPoint).component==(p2 as IJoinPoint).component
+			return sameop && samecomp	
+		}
+		else // cannot be in conflict, it is a join point in a composite and one in one of its children
+			return false
+	}
+
 	def equals(Message m1, Message m2) {
 		if (m1===null || m2===null)
 			return m1===m2
