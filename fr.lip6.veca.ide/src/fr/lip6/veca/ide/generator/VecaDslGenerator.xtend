@@ -239,14 +239,14 @@ class VecaDslGenerator extends AbstractGenerator {
 	
 	def doGenerate(EJoinPoint p) '''
 	{
-		"name": [],
-		"operation": «doGenerate(p.operation)»
+		"jpname": [],
+		"jpoperation": «doGenerate(p.operation)»
 	}	'''
 	
 	def doGenerate(IJoinPoint p) '''
 	{
-		"name": ["«p.component.name»"],
-		"operation": ["«p.operation»"]
+		"jpname": ["«p.component.name»"],
+		"jpoperation": ["«p.operation»"]
 	}
 	'''
 		
