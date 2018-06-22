@@ -8,3 +8,5 @@ fr.lip6.veca.ide.repository/plugins
 **/.launch
 fr.lip6.veca.ide.repository/artifacts.jar
 fr.lip6.veca.ide.repository/content.jar
+fr.lip6.veca.ide.ui/plugin.xml_gen
+
