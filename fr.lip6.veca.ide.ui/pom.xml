@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fr.lip6.veca.ide</groupId>
 		<artifactId>fr.lip6.veca.ide.parent</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>fr.lip6.veca.ide.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
