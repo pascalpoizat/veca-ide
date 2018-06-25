@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<templates>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.BasicComponent" deleted="false" description="template for basic components" enabled="true" name="basic_component" id="veca_predefined_1">
+	basic component type ${TYPENAME} is
+		signature
+			messages ${MSG1}, ${MSG2};
+			provides
+				${OP1}(${MSG1}),
+				${OP2}(${MSG1}): ${MSG2};
+			requires
+				${OP3}(${MSG1}),
+				${OP4}(${MSG1}),
+				${OP5}(${MSG1}): ${MSG2};
+		behavior
+			start in BEGIN;
+			stop in END1 END2;
+			BEGIN:
+				receive ${OP1} then DECIDE_${OP1},
+				receive ${OP2} then TRANSMIT_${OP5};
+			DECIDE_${OP1}:
+				tau then TRANSMIT_${OP3},
+				tau then TRANSMIT_${OP4};
+			TRANSMIT_${OP3}:
+				invoke ${OP3} then END1;
+			TRANSMIT_${OP4}:
+				invoke ${OP4} then END1;
+			TRANSMIT_${OP5}:
+				invoke ${OP5} then WAIT_${OP5};
+			WAIT_${OP5}:
+				result ${OP5} then REPLY_${OP2};
+			REPLY_${OP2}:
+				reply ${OP2} then END2;
+			END1:;
+			END2:;
+		constraints
+			invoke ${OP5} -&gt; result ${OP5} : 2 .. 10
+			receive ${OP1} -&gt; reply ${OP1} : 0 .. 4
+			receive ${OP2} -&gt; reply ${OP2} : 2 .. 14;	
+	end
+</template>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.kw_define" deleted="false" description="template for a closed system" enabled="true" name="closed_system" id="veca_predefined_2">
+define
+
+	// component types
+	// complete using one the component templates
+
+	// main component type
+	// complete using one of the component templates
+
+	// specification of the environement
+	// expected IO
+	basic component type Environment_Specification is
+		signature
+			messages ${MSG1}, ${MSG2};
+		provides
+			${OP1}(${MSG1}): ${MSG2};
+		requires
+			${OP2}(${MSG1}): ${MSG2};
+		behavior
+			// default is the "flower" behavior
+			start in S0;
+			stop in S0;
+			S0:
+				receive ${OP1} then S0,
+				reply ${OP1} then S0,
+				invoke ${OP2} then S0,
+				result ${OP2} then S0;
+		// default is no constraints
+	end
+	
+	// system = main component type + environment
+	composite component type ClosedSystem is
+		signature
+		subcomponents
+			main: ${MAIN_TYPE},
+			env: Environment_Specification;
+		bindings
+			@1: env.${OP2} --&gt; main.${OP2},
+			@2: main.${OP1} --&gt; env.${OP1};
+	end
+	
+in
+	sys: ClosedSystem
+</template>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.CompositeComponent" deleted="false" description="template for composite components" enabled="true" name="composite_component" id="veca_predefined_3">
+	composite component type ${TYPE} is
+		signature
+			messages ${MSG1}, ${MSG2};
+		provides
+			${OP1}(${MSG1}): ${MSG2},
+		requires
+			${OP2}(${MSG1}): ${MSG2},
+		subcomponents
+			${ID1}: ${SUBTYPE1},
+			${ID2}: ${SUBTYPE2};
+		bindings
+			@1: self.${OP1} ==&gt; ${ID1}.${OP1},
+			@2: ${ID2}.${OP2} ==&gt; self.${OP2},
+			@3: ${ID1}.${OP3} --&gt; ${ID2}.${OP3};
+	end
+</template>
+</templates>
