@@ -20,6 +20,13 @@ import fr.lip6.veca.ide.vecaDsl.ExternalBinding
 import fr.lip6.veca.ide.vecaDsl.NamedComponent
 import fr.lip6.veca.ide.vecaDsl.Model
 import fr.lip6.veca.ide.vecaDsl.IJoinPoint
+import fr.lip6.veca.ide.vecaDsl.CommunicationAction
+import java.util.List
+import fr.lip6.veca.ide.vecaDsl.CommunicationKind
+import fr.lip6.veca.ide.vecaDsl.BasicComponent
+import fr.lip6.veca.ide.vecaDsl.Transition
+import fr.lip6.veca.ide.vecaDsl.Action
+import fr.lip6.veca.ide.vecaDsl.TransitionAction
 
 /**
  * This class contains custom validation rules. 
@@ -38,19 +45,9 @@ public static val SELF_COMPONENT = "selfComponent"
 public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
 public static val NARY_BINDING = "naryBinding"
+public static val INCORRECT_BEHAVIOR_EVENT = "incorrectBehaviorEvent"
 public static val ERROR = "error"
 
-	// component type names begin with a capital
-	@Check
-	def checkComponentStartsWithCapital(Component c) {
-		if (!Character.isUpperCase(c.name.charAt(0))) {
-			warning('Component type name should start with a capital', 
-					VecaDslPackage.Literals.COMPONENT__NAME,
-					INVALID_NAME,
-					c.name)
-		}
-	}
-	
 	// all component types have different names
 	@Check
 	def checkComponentNamesAreDifferent(Model m) {
@@ -61,6 +58,17 @@ public static val ERROR = "error"
 					INCORRECT_TYPES
 				)
 			}
+		}
+	}
+
+	// component type names begin with a capital
+	@Check
+	def checkComponentStartsWithCapital(Component c) {
+		if (!Character.isUpperCase(c.name.charAt(0))) {
+			warning('Component type name should start with a capital', 
+					VecaDslPackage.Literals.COMPONENT__NAME,
+					INVALID_NAME,
+					c.name)
 		}
 	}
 	
@@ -180,8 +188,49 @@ public static val ERROR = "error"
 			}
 		}
 	}
-		
+	
+	// events in behaviors are correct wrt operations
+	@Check
+	def checkEventsInBehaviors(BasicComponent c) {
+		val providedOperations = c.signature.providedOps
+		val requiredOperations = c.signature.requiredOps
+		for(Transition t : c.behavior.transitions) {
+			for(TransitionAction a : t.actions) {
+				if (a.action instanceof CommunicationAction) {
+					if (!isCorrectEvent(a.action as CommunicationAction, providedOperations, requiredOperations)) {
+						error(eventErrorMessage(a.action as CommunicationAction).toString,
+							VecaDslPackage.Literals.BASIC_COMPONENT__BEHAVIOR,
+							INCORRECT_BEHAVIOR_EVENT
+						)
+					}
+				}
+			}
+		}
+	}
+	
 	// helpers
+	
+	def eventErrorMessage(CommunicationAction a) '''«IF (a.communicationKind == CommunicationKind.RECEIVE || a.communicationKind == CommunicationKind.REPLY)»
+	receive/reply on operation «a.operation.name» is not possible
+	«ELSEIF (a.communicationKind == CommunicationKind.INVOKE || a.communicationKind == CommunicationKind.RESULT)»
+	invoke/result on operation «a.operation.name» is not possible
+	«ELSE»
+	unknown kind of event for «a»
+	«ENDIF»
+	'''
+	
+	// an event is correct wrt and operation o :
+	// - if o is provided, only receive o, reply o, and tau are ok
+	// - if o is required, only invoke o, result o, and tau are ok
+	def isCorrectEvent(CommunicationAction a, List<Operation> providedOperations, List<Operation> requiredOperations) {
+		if (a.communicationKind == CommunicationKind.RECEIVE || a.communicationKind == CommunicationKind.REPLY) {
+			return providedOperations.contains(a.operation)
+		} else if (a.communicationKind == CommunicationKind.INVOKE || a.communicationKind == CommunicationKind.RESULT) {
+			return requiredOperations.contains(a.operation)			
+		} else {
+			return false;	
+		}
+	}
 	
 	// two bindings are in conflict if a join point of the first and a join point of the second are in conflict
 	def conflict(BindingInformation bi1, BindingInformation bi2) {
