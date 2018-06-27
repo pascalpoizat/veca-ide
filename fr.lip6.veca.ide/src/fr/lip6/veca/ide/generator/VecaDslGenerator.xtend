@@ -3,31 +3,38 @@
  */
 package fr.lip6.veca.ide.generator
 
+import fr.lip6.veca.ide.vecaDsl.Action
+import fr.lip6.veca.ide.vecaDsl.BasicComponent
+import fr.lip6.veca.ide.vecaDsl.Behavior
+import fr.lip6.veca.ide.vecaDsl.Binding
+import fr.lip6.veca.ide.vecaDsl.CommunicationAction
+import fr.lip6.veca.ide.vecaDsl.CommunicationKind
+import fr.lip6.veca.ide.vecaDsl.Component
+import fr.lip6.veca.ide.vecaDsl.CompositeComponent
+import fr.lip6.veca.ide.vecaDsl.EJoinPoint
+import fr.lip6.veca.ide.vecaDsl.ExternalBinding
+import fr.lip6.veca.ide.vecaDsl.IJoinPoint
+import fr.lip6.veca.ide.vecaDsl.InternalAction
+import fr.lip6.veca.ide.vecaDsl.InternalBinding
+import fr.lip6.veca.ide.vecaDsl.JoinPoint
+import fr.lip6.veca.ide.vecaDsl.Message
+import fr.lip6.veca.ide.vecaDsl.Model
+import fr.lip6.veca.ide.vecaDsl.NamedComponent
+import fr.lip6.veca.ide.vecaDsl.Operation
+import fr.lip6.veca.ide.vecaDsl.Signature
+import fr.lip6.veca.ide.vecaDsl.State
+import fr.lip6.veca.ide.vecaDsl.TimeConstraint
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import fr.lip6.veca.ide.vecaDsl.Model
-import fr.lip6.veca.ide.vecaDsl.BasicComponent
-import fr.lip6.veca.ide.vecaDsl.CompositeComponent
-import fr.lip6.veca.ide.vecaDsl.Component
-import fr.lip6.veca.ide.vecaDsl.Signature
-import fr.lip6.veca.ide.vecaDsl.Operation
-import fr.lip6.veca.ide.vecaDsl.Message
-import fr.lip6.veca.ide.vecaDsl.NamedComponent
-import fr.lip6.veca.ide.vecaDsl.Behavior
-import fr.lip6.veca.ide.vecaDsl.TimeConstraint
-import fr.lip6.veca.ide.vecaDsl.InternalBinding
-import fr.lip6.veca.ide.vecaDsl.ExternalBinding
-import fr.lip6.veca.ide.vecaDsl.CommunicationAction
-import fr.lip6.veca.ide.vecaDsl.CommunicationKind
-import fr.lip6.veca.ide.vecaDsl.Binding
-import fr.lip6.veca.ide.vecaDsl.JoinPoint
-import fr.lip6.veca.ide.vecaDsl.EJoinPoint
-import fr.lip6.veca.ide.vecaDsl.IJoinPoint
-import fr.lip6.veca.ide.vecaDsl.State
-import fr.lip6.veca.ide.vecaDsl.InternalAction
-import fr.lip6.veca.ide.vecaDsl.Action
+import java.io.IOException
+import org.eclipse.core.runtime.Path
+import org.eclipse.core.resources.IFile
+import org.eclipse.core.resources.ResourcesPlugin
+import java.net.URI
+import java.io.File
+import org.eclipse.core.runtime.IPath
 
 /**
  * Generates code from your model files on save.
@@ -37,17 +44,94 @@ import fr.lip6.veca.ide.vecaDsl.Action
 class VecaDslGenerator extends AbstractGenerator {
 	
 	public static final String JSON_FILE_EXTENSION = "json"
+	public static final String XTA_FILE_EXTENSION = "xta"
+	public static final String LOG_FILE_EXTENSION = "log"
 	
+	public static final String OSX_COMMAND = "%s/veca-haskell-exe transform %s"
+	public static final String DEFAULT_OSX_VECA_HOME = "%s/.local/bin"
+	
+	public static final String DEFAULT_GENERATION_FOLDER = "src-gen"
+
+	static final Logger log = new Logger
+		
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		log.reset
+		// setup
 		val model = resource.allContents.filter(Model).toList.get(0)
 		val vecaURI = resource.URI
-		val jsonURI = vecaURI.trimFileExtension.appendFileExtension(JSON_FILE_EXTENSION).lastSegment
-		var contents = new StringBuilder
-		contents.append(doGenerate(model))
+		val vecaTrimmedURI = vecaURI.trimFileExtension
+		val vecaFileName = vecaURI.lastSegment
+		val jsonFileName = vecaTrimmedURI
+			.appendFileExtension(JSON_FILE_EXTENSION)
+			.lastSegment
+		val xtaFileName = vecaTrimmedURI
+			.appendFileExtension(XTA_FILE_EXTENSION)
+			.lastSegment
+		val logFileName = vecaTrimmedURI
+			.appendFileExtension(LOG_FILE_EXTENSION)
+			.lastSegment
 		// generate JSON file
-		fsa.generateFile(jsonURI, contents.toString)
+		doGenerateJSON(fsa, model, vecaFileName, jsonFileName, log)
+		// generate XTA file
+		if (vecaURI.isPlatformResource()) {
+			val path = new Path(vecaTrimmedURI.toPlatformString(true))
+			val IFile file = ResourcesPlugin.getWorkspace.getRoot.getFile(path)
+			val rawIPath = file.getLocation
+			val rawPath = rawIPath.removeLastSegments(1)
+			val fileName = String.format("%s%s%s%s%s",
+				rawPath.toOSString,
+				File.separator,
+				DEFAULT_GENERATION_FOLDER,
+				File.separator,
+				vecaTrimmedURI.lastSegment
+			)
+			doGenerateXTA(fsa, jsonFileName, xtaFileName, fileName, log)
+		} else {
+			log.error(String.format("cannot work with resource %s (error wrt Eclipse resource / path).", vecaURI), true)
+			log.error("only the JSON file has been generated, please perform the transformation in XTA manually.", true)
+		}
+		fsa.generateFile(logFileName, log.toString)
 	}
 	
+	def void doGenerateJSON(IFileSystemAccess2 fsa, Model model, String vecaFileName, String jsonFileName, Logger log) {
+		log.info(String.format("VECA to JSON transformation %s -> %s.", vecaFileName, jsonFileName), true)
+		fsa.generateFile(jsonFileName, model.doGenerate)
+		log.info("done.", true)
+	}
+	
+	def void doGenerateXTA(IFileSystemAccess2 fsa, String jsonFileName, String xtaFileName, String path, Logger log) {
+		log.info(String.format("JSON to XTA transformation %s -> %s.", jsonFileName, xtaFileName), true)
+		val osname = System.getProperty("os.name").toUpperCase
+		log.info(String.format("detected OS is %s.", osname), true)
+		// for OSX and Linux
+		if (Helper.underOSX(osname) || Helper.underLinux(osname)) {
+			var home = System.getenv("HOME")
+			var vecaHome = System.getenv("VECA_HOME")
+			if (vecaHome === null) {
+				vecaHome = String.format(DEFAULT_OSX_VECA_HOME, home)			
+				log.info(String.format("VECA_HOME is not set, setting it to %s.", vecaHome), true)
+			} else {
+				log.info(String.format("VECA_HOME set to %s.", vecaHome), true)
+			}
+			val command = String.format(OSX_COMMAND, vecaHome, path)
+			log.info(String.format("command is %s.", command), true)
+			try {
+				val process = Runtime.getRuntime.exec(command)
+				process.waitFor
+				if (process.exitValue == 0)
+					log.info(process.inputStream, false)
+				else
+					log.error(process.errorStream, false)
+			}
+			catch (IOException e) {
+				log.error(e.toString, true)
+			}
+		// else (Windows, ...) not yet supported
+		} else {
+			log.error("unsupported OS.", true)
+		}
+	}
+		
 	def doGenerate(Model m) '''
 	«doGenerate(m.root)»
 	'''
