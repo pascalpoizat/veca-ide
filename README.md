@@ -61,10 +61,21 @@ The syntax of a model in the VECA DSL format is available in [the VECA project d
 
 The plugin provides you with:
 
-- syntax highlighting
+- syntax highlighting and identifier renaming
+
+- some basic templates (available upon smart completion using Ctrl+Space)
 
 - some model verifications that can be performed directly on the VECA model (see Syntactic verification, in [the VECA projet documentation](https://pascalpoizat.github.io/veca-web/documentation.html))
 
-- transformation from the VECA DSL format to the VECA JSON format. Transformation is performed upon saving a syntactically correct model that has been edited. The generated file can be found in the `src-gen` directory.
+- transformation from the VECA DSL format (`.veca` files) to the VECA JSON format (`.json` files) and to sets of timed automata (`.xta` files). 
 
-For the time being, verification is achieved from outside the plugin by first transforming the model in VECA JSON format into a timed automaton in XTA format (using [veca-haskell](https://github.com/pascalpoizat/veca-haskell)) and then using the [ITS-Tools](https://lip6.github.io/ITSTools-web/) or [UPPAAL](http://uppaal.org) verification tools.
+	Transformation is performed upon saving a syntactically correct model that has been edited.
+	The generated files can be found in the `src-gen` directory. Log files are also there.
+	
+	:warning: the transformation to timed automata only runs from the plugin if your OS is Linux or Mac OS X.
+	For other OS, one still has to run [veca-haskell](https://github.com/pascalpoizat/veca-haskell) manually.
+	
+	:warning: the plugin takes for granted that generation is done in the `src-gen` directory.
+	The user should not change the generation directory (in Eclipse Preferences -> VecaDSL -> Compiler : Directory).
+
+For the time being, verification is achieved from outside the plugin using the [ITS-Tools](https://lip6.github.io/ITSTools-web/) or [UPPAAL](http://uppaal.org) verification tools on the `.xta` files.
