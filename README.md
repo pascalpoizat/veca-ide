@@ -75,6 +75,8 @@ The plugin provides you with:
 	:warning: the transformation to timed automata only runs from the plugin if your OS is Linux or Mac OS X.
 	For other OS, one still has to run [veca-haskell](https://github.com/pascalpoizat/veca-haskell) manually.
 	
+	:warning: the `veca-haskell-exe` command must be installed in the default place (`$HOME/.local/bin`, using the `stack install` command) or in a place given in the `$VECA_HOME` environment variable. 
+	
 	:warning: the plugin takes for granted that generation is done in the `src-gen` directory.
 	The user should not change the generation directory (in Eclipse Preferences -> VecaDSL -> Compiler : Directory).
 
