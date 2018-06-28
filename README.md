@@ -33,7 +33,7 @@ For other OS, one still has to run [veca-haskell](https://github.com/pascalpoiza
 
 You must install [veca-haskell](https://github.com/pascalpoizat/veca-haskell).
 
-If you follow the intructions given in its [README](https://github.com/pascalpoizat/veca-haskell/README.md), it will be installed in `$HOME/.local/bin`.
+If you follow the intructions given in its [README](https://github.com/pascalpoizat/veca-haskell/blob/master/README.md), it will be installed in `$HOME/.local/bin`.
 If you choose to install it somewhere else, the `$VECA_HOME` environment variable should be set to this place.
 
 Further, the temporal automata generation takes for granted that the generated JSON files are in the `src-gen` subdirectory of your project.
