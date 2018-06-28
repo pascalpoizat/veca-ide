@@ -48,7 +48,7 @@ You can get the VECA plugin directly from the update-site:
 
 - from this repository, select VecaDsl / VecaDsl Feature for installation
 
-If Eclipse warns you that you are installing software that contains unsigned contents, click OK. 
+If Eclipse warns you that you are installing software that contains unsigned content, click `Install anyway`. 
 
 ## 2b. Building from source
 
