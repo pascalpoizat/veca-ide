@@ -16,14 +16,29 @@ To use this plugin your installation must fulfil the requirements given in **1. 
 
 ## 1. Requirements
 
-You will need a recent Eclipse with version 2.13 or more of the XText libraries.
-For this:
+### To use the DSL
 
-- get the **Eclipse IDE for Java and DSL Developers** from [the Eclipse Packages Site](https://www.eclipse.org/downloads/eclipse-packages/)
+Get the **Eclipse IDE for Java and DSL Developers** Photon or higher (it has been tested with Eclipse Photon)
+from [the Eclipse IDE Downloads page](https://www.eclipse.org/downloads/eclipse-packages/).
 
-- in Eclipse, Help -> Install New Sofware ... -> Add a new repository from `http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/` (you can name it `xtext (update site)` for example)
+### To generate the JSON representation from the DSL
 
-- from this repository, select Xtext / Xtext complete SDK for installation
+Nothing more is required.
+
+### To generate a set of temporal automata from the DSL
+
+:warning:
+Linux and Mac OS X only.
+For other OS, one still has to run [veca-haskell](https://github.com/pascalpoizat/veca-haskell) manually.
+
+You must install [veca-haskell](https://github.com/pascalpoizat/veca-haskell).
+
+If you follow the intructions given in its [README](https://github.com/pascalpoizat/veca-haskell/README.md), it will be installed in `$HOME/.local/bin`.
+If you choose to install it somewhere else, the `$VECA_HOME` environment variable should be set to this place.
+
+Further, the temporal automata generation takes for granted that the generated JSON files are in the `src-gen` subdirectory of your project.
+This is the default so you have nothing more to do.
+Please do not change the setting of the generation directory in `Eclipse Preferences -> VecaDsl -> Compiler / Directory`.
 
 ## 2a. Update-site
 
@@ -32,6 +47,8 @@ You can get the VECA plugin directly from the update-site:
 - in Eclipse, Help -> Install New Software ... -> Add a new repository from `https://pascalpoizat.github.io/veca-ide/` (you can name it `veca dsl (update site)` for example)
 
 - from this repository, select VecaDsl / VecaDsl Feature for installation
+
+If Eclipse warns you that you are installing software that contains unsigned contents, click OK. 
 
 ## 2b. Building from source
 
@@ -61,23 +78,15 @@ The syntax of a model in the VECA DSL format is available in [the VECA project d
 
 The plugin provides you with:
 
-- syntax highlighting and identifier renaming
+- IDE capabilities such as syntax highlighting and renaming.
 
-- some basic templates (available upon smart completion using Ctrl+Space)
+- templates (available upon smart completion using Ctrl+Space)
 
-- some model verifications that can be performed directly on the VECA model (see Syntactic verification, in [the VECA projet documentation](https://pascalpoizat.github.io/veca-web/documentation.html))
+- model verifications that can be performed directly on the VECA model (see Syntactic verification, in [the VECA projet documentation](https://pascalpoizat.github.io/veca-web/documentation.html))
 
 - transformation from the VECA DSL format (`.veca` files) to the VECA JSON format (`.json` files) and to sets of timed automata (`.xta` files). 
 
-	Transformation is performed upon saving a syntactically correct model that has been edited.
+	Transformations are performed upon saving a syntactically correct model that has been edited.
 	The generated files can be found in the `src-gen` directory. Log files are also there.
 	
-	:warning: the transformation to timed automata only runs from the plugin if your OS is Linux or Mac OS X.
-	For other OS, one still has to run [veca-haskell](https://github.com/pascalpoizat/veca-haskell) manually.
-	
-	:warning: the `veca-haskell-exe` command must be installed in the default place (`$HOME/.local/bin`, using the `stack install` command) or in a place given in the `$VECA_HOME` environment variable. 
-	
-	:warning: the plugin takes for granted that generation is done in the `src-gen` directory.
-	The user should not change the generation directory (in Eclipse Preferences -> VecaDSL -> Compiler : Directory).
-
 For the time being, verification is achieved from outside the plugin using the [ITS-Tools](https://lip6.github.io/ITSTools-web/) or [UPPAAL](http://uppaal.org) verification tools on the `.xta` files.
