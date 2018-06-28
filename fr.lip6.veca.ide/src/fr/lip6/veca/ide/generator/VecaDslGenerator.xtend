@@ -35,6 +35,7 @@ import org.eclipse.core.resources.ResourcesPlugin
 import java.net.URI
 import java.io.File
 import org.eclipse.core.runtime.IPath
+import java.util.Arrays
 
 /**
  * Generates code from your model files on save.
@@ -47,7 +48,8 @@ class VecaDslGenerator extends AbstractGenerator {
 	public static final String XTA_FILE_EXTENSION = "xta"
 	public static final String LOG_FILE_EXTENSION = "log"
 	
-	public static final String OSX_COMMAND = "%s/veca-haskell-exe transform %s"
+	public static final String OSX_COMMAND = "%s/veca-haskell-exe"
+	public static final String VECA_COMMAND = "transform"
 	public static final String DEFAULT_OSX_VECA_HOME = "%s/.local/bin"
 	
 	public static final String DEFAULT_GENERATION_FOLDER = "src-gen"
@@ -113,19 +115,7 @@ class VecaDslGenerator extends AbstractGenerator {
 			} else {
 				log.info(String.format("VECA_HOME set to %s.", vecaHome), true)
 			}
-			val command = String.format(OSX_COMMAND, vecaHome, path)
-			log.info(String.format("command is %s.", command), true)
-			try {
-				val process = Runtime.getRuntime.exec(command)
-				process.waitFor
-				if (process.exitValue == 0)
-					log.info(process.inputStream, false)
-				else
-					log.error(process.errorStream, false)
-			}
-			catch (IOException e) {
-				log.error(e.toString, true)
-			}
+			Helper.execute(Arrays.asList(String.format(OSX_COMMAND, vecaHome), VECA_COMMAND, path), log)
 		// else (Windows, ...) not yet supported
 		} else {
 			log.error("unsupported OS.", true)
