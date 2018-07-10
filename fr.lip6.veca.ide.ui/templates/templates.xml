@@ -99,4 +99,7 @@ in
 			@3: ${ID1}.${OP3} --&gt; ${ID2}.${OP3};
 	end
 </template>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.Binding" deleted="false" description="external binding from other to self" enabled="true" name="extbindOS" id="veca_predefined_4">@${id} : ${c}.${o} ==&gt; self.${o}</template>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.Binding" deleted="false" description="external binding self to other" enabled="true" name="extbindSO" id="veca_predefined_5">@${id} : self.${o} ==&gt; ${c}.${o}</template>
+<template autoinsert="true" context="fr.lip6.veca.ide.VecaDsl.Binding" deleted="false" description="internal binding" enabled="true" name="inbind" id="veca_predefined_6">@${id} : ${c1}.${o} --&gt; ${c2}.${o}</template>
 </templates>
