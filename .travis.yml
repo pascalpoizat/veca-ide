@@ -4,8 +4,9 @@
 # https://docs.travis-ci.com/user/gui-and-headless-browsers/
 # https://docs.travis-ci.com/user/deployment/pages/
 
-# install: true
+install: true
 
+dist: trusty
 language: java
 jdk:
 - oraclejdk8
