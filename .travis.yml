@@ -4,6 +4,7 @@
 # https://docs.travis-ci.com/user/gui-and-headless-browsers/
 # https://docs.travis-ci.com/user/deployment/pages/
 
+dist: xenial
 install: true
 
 language: java
