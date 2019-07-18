@@ -7,6 +7,8 @@
 install: true
 
 language: java
+services:
+- xvfb
 
 env:  
   global:  
@@ -17,7 +19,7 @@ before_script:
  - export JAVA_OPTS='-Xms1g -Xmx3g'
  - echo "MAVEN_OPTS='-Xmx3g'" > ~/.mavenrc
  - "export DISPLAY=:99.0"
- - "sh -e /etc/init.d/xvfb start"
+# - "sh -e /etc/init.d/xvfb start"
  - sleep 10
 
 script : 
