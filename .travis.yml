@@ -4,9 +4,11 @@
 # https://docs.travis-ci.com/user/gui-and-headless-browsers/
 # https://docs.travis-ci.com/user/deployment/pages/
 
-install: true
+# install: true
 
 language: java
+jdk:
+- oraclejdk8
 services:
 - xvfb
 
@@ -15,8 +17,6 @@ env:
     - MAVEN_OPTS="-Xmx3g"
 
 before_script:
- - java -version
- - javac -version
  - echo $JAVA_OPTS
  - export JAVA_OPTS='-Xms1g -Xmx3g'
  - echo "MAVEN_OPTS='-Xmx3g'" > ~/.mavenrc
@@ -26,8 +26,6 @@ before_script:
 
 script : 
  - mvn -e clean install 
-
-jdk: openjdk8
 
 cache:
   directories:
