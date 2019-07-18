@@ -25,7 +25,7 @@ before_script:
 script : 
  - mvn -e clean install 
 
-jdk: oraclejdk11
+jdk: oraclejdk9
 
 cache:
   directories:
