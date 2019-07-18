@@ -17,7 +17,6 @@ BasicComponent:
 	'basic' 'component' 'type' name=ID 'is'
 	'signature' signature=Signature
 	'behavior' behavior=Behavior
-	('constraints' constraints+=TimeConstraint (constraints+=TimeConstraint)* ';')?
 	'end'
 ;
 
@@ -62,11 +61,6 @@ TransitionAction:
 State:
 	{State}
 	name=ID
-;
-
-TimeConstraint:
-	{TimeConstraint}
-	e1=CommunicationAction '->' e2=CommunicationAction ':' d1=INT '..' d2=INT
 ;
 
 Binding:

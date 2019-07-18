@@ -23,7 +23,6 @@ import fr.lip6.veca.ide.vecaDsl.NamedComponent
 import fr.lip6.veca.ide.vecaDsl.Operation
 import fr.lip6.veca.ide.vecaDsl.Signature
 import fr.lip6.veca.ide.vecaDsl.State
-import fr.lip6.veca.ide.vecaDsl.TimeConstraint
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
@@ -140,10 +139,7 @@ class VecaDslGenerator extends AbstractGenerator {
 		"componentId": ["«c.name»"],
 		"tag": "BasicComponent",
 		"signature": «doGenerate(c.signature)»,
-		"behavior": «doGenerate(c.behavior)»,
-		"timeconstraints": [
-			«c.constraints.map[doGenerate].join(",")»
-		]
+		"behavior": «doGenerate(c.behavior)»
 	}
 	'''
 	
@@ -262,16 +258,7 @@ class VecaDslGenerator extends AbstractGenerator {
 	def doGenerate(GenAction a) {
 		return doGenerate(a.action);
 	}
-	
-	def doGenerate(TimeConstraint c) '''
-	{
-		"startEvent": «doGenerate(c.e1)»,
-		"stopEvent": «doGenerate(c.e2)»,
-		"beginTime": «c.d1»,
-		"endTime": «c.d2»
-	}
-	'''
-	
+		
 	def doGenerate(InternalAction a) '''
 	{
 		"tag": "CTau"
