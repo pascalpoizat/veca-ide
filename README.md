@@ -6,6 +6,9 @@
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/pascalpoizat/veca-ide.svg?columns=all)](https://waffle.io/pascalpoizat/veca-ide)
 <!--[![Code Coverage](https://img.shields.io/coveralls/pascalpoizat/veca-ide/master.svg?style=flat-square)](https://coveralls.io/github/pascalpoizat/veca-ide)-->
 
+**THIS PROJECT IS UNDER HEAVY EVOLUTION.
+To the time being, the automatic build of the plugin repository site (used in step 2a) is failing.**
+
 This is the Eclipse IDE plugin for the DSL of the VECA project (DSL edition and transformation from the DSL to the VECA JSON format). 
 
 - for an overview of the VECA project features and objectives, see [VECA project](https://pascalpoizat.github.io/veca-web).
