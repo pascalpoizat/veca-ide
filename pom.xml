@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -8,9 +9,11 @@
 
 	<properties>
 		<tycho-version>1.0.0</tycho-version>
-		<xtextVersion>2.13.0</xtextVersion>
+		<xtextVersion>2.19.0</xtextVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<orbit-site>http://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository/</orbit-site>
+		<platform-version-name>2019-09</platform-version-name>
+		<maven.compiler.source>1.11</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<modules>
@@ -256,29 +259,30 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>codehaus-snapshots</id>
-			<name>disable dead 'Codehaus Snapshots' repository, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=481478</name>
-			<url>http://nexus.codehaus.org/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+			<id>asm</id>
+			<layout>p2</layout>
+			<url>${orbit-site}</url>
+		</repository>
+
+
+		<repository>
+			<id>Eclipse current release</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/${platform-version-name}</url>
+		</repository>
+
+		<repository>
+			<id>The central nexus</id>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
+
 		<pluginRepository>
-			<id>codehaus-snapshots</id>
-			<name>disable dead 'Codehaus Snapshots' repository, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=481478</name>
-			<url>http://nexus.codehaus.org/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+			<id>The central nexus</id>
+			<url>http://repo1.maven.org/maven2</url>
 		</pluginRepository>
+
 	</pluginRepositories>
 
 	<dependencies>
