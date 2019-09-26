@@ -24,7 +24,8 @@
 		<module>fr.lip6.veca.ide.feature</module>
 		<module>fr.lip6.veca.ide.repository</module>
 		<module>fr.lip6.veca.ide.tests</module>
-		<module>fr.lip6.veca.ide.ui.tests</module>
+	<!--  This would need a X11 server to run (e.g. not travis) and is empty anyway >
+	<!--	<module>fr.lip6.veca.ide.ui.tests</module> >
 	</modules>
 	<build>
 		<plugins>
