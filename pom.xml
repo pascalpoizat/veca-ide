@@ -8,11 +8,11 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho-version>1.4.0</tycho-version>
+		<tycho-version>1.5.0-SNAPSHOT</tycho-version>
 		<xtextVersion>2.19.0</xtextVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<orbit-site>http://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository/</orbit-site>
-		<platform-version-name>2019-09</platform-version-name>
+        <platform-version-name>2019-09</platform-version-name>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
@@ -283,6 +283,12 @@
 			<id>The central nexus</id>
 			<url>http://repo1.maven.org/maven2</url>
 		</pluginRepository>
+        
+        <pluginRepository>
+            <id>tycho-snapshots</id>
+            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+        </pluginRepository>
+        
 
 	</pluginRepositories>
 
