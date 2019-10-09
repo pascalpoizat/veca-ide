@@ -27,6 +27,9 @@ import fr.lip6.veca.ide.vecaDsl.BasicComponent
 import fr.lip6.veca.ide.vecaDsl.Transition
 import fr.lip6.veca.ide.vecaDsl.Action
 import fr.lip6.veca.ide.vecaDsl.TransitionAction
+import fr.lip6.veca.ide.vecaDsl.TimeInterval
+import fr.lip6.veca.ide.vecaDsl.InternalAction
+import fr.lip6.veca.ide.vecaDsl.ExplicitTimeInterval
 
 /**
  * This class contains custom validation rules. 
@@ -46,7 +49,22 @@ public static val SELF_BINDING = "selfBinding"
 public static val MULTIPLE_BINDINGS_SAME_ID = "multipleBindingsWithSameId"
 public static val NARY_BINDING = "naryBinding"
 public static val INCORRECT_BEHAVIOR_EVENT = "incorrectBehaviorEvent"
+public static val INCORRECT_TIME_INTERVAL = "incorrectTimeInterval"
 public static val ERROR = "error"
+
+	// time intervals are correct
+	@Check
+	def checkTimeIntervals(InternalAction a) {
+		val t = a.interval;
+		if (t instanceof ExplicitTimeInterval) {
+			if (t.min<0 || t.max<0 || t.min>=t.max) {
+				error(String.format("Incorrect time interval %d..%d", t.min, t.max),
+					VecaDslPackage.Literals.INTERNAL_ACTION.EAllStructuralFeatures.get(0),
+					INCORRECT_TIME_INTERVAL
+				)
+			}
+		}
+	}
 
 	// all component types have different names
 	@Check
@@ -104,7 +122,7 @@ public static val ERROR = "error"
 			}
 		}
 	}
-	
+
 	// [X] operations used in internal bindings do exist 
  	@Check
 	def checkExistingOperationInBinding(BindingInformation b) {
@@ -121,7 +139,7 @@ public static val ERROR = "error"
 			}
 		}
 	}
-	
+
 	// no self binding
 	@Check
 	def checkNoSelfBinding(Binding b) {
@@ -160,7 +178,7 @@ public static val ERROR = "error"
 			}
 		}
 	}
-	
+
 	// children in composites have different names
 	@Check
 	def checkChildrenHaveDifferentNames(CompositeComponent c) {
@@ -259,7 +277,7 @@ public static val ERROR = "error"
 			return m1===m2
 		return m1.name.equals(m2.name)
 	}
-	
+
 	def compatible(Operation o1, Operation o2) {
 		return
 			o1.name.equals(o2.name) &&
@@ -347,3 +365,4 @@ public static val ERROR = "error"
 	}
 	
 }
+

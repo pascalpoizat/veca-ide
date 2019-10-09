@@ -72,7 +72,8 @@ class VecaDslGenerator extends AbstractGenerator {
 			.appendFileExtension(LOG_FILE_EXTENSION)
 			.lastSegment
 		// generate JSON file
-		doGenerateJSON(fsa, model, vecaFileName, jsonFileName, log)
+		// doGenerateJSON(fsa, model, vecaFileName, jsonFileName, log)
+		/*
 		// generate XTA file
 		if (vecaURI.isPlatformResource()) {
 			val path = new Path(vecaTrimmedURI.toPlatformString(true))
@@ -90,7 +91,7 @@ class VecaDslGenerator extends AbstractGenerator {
 		} else {
 			log.error(String.format("cannot work with resource %s (error wrt Eclipse resource / path).", vecaURI), true)
 			log.error("only the JSON file has been generated, please perform the transformation in XTA manually.", true)
-		}
+		}*/
 		fsa.generateFile(logFileName, log.toString)
 	}
 	

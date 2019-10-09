@@ -98,7 +98,7 @@ EJoinPoint:
 ;
 
 Action:
-	CommunicationAction | InternalAction
+	CommunicationAction | InternalAction | TimeoutAction
 ;
 
 CommunicationAction:
@@ -108,7 +108,12 @@ CommunicationAction:
 
 InternalAction:
 	{InternalAction}
-	'tau'
+	'internal' interval=TimeInterval
+;
+
+TimeoutAction:
+	{TimeoutAction}
+	'after' delay=INT
 ;
 
 Message:
@@ -121,6 +126,20 @@ Operation:
 	name=ID
 	'(' inputMessage=[Message] ')'
 	(':' outputMessage=[Message])?
+;
+
+TimeInterval:
+	ExplicitTimeInterval | ImplicitTimeInterval
+;
+
+ExplicitTimeInterval:
+	{ExplicitTimeInterval}
+	min=INT ".." max=INT
+;
+
+ImplicitTimeInterval:
+	{ImplicitTimeInterval}
+	'hidden'
 ;
 
 enum CommunicationKind:
